@@ -67,7 +67,10 @@ def main():
 
         if not tate:
             vy *= -1
-
+            
+        if kk_rct.colliderect(bb_rct):
+            return
+        
         screen.blit(bg_img,[0,0])
         screen.blit(kk_img, kk_rct)
         screen.blit(bb_img, bb_rct)
