@@ -1,6 +1,7 @@
 import os
 import random
 import sys
+import time
 import pygame as pg
 
 
@@ -18,20 +19,46 @@ def check_bound(rct):
     tate = 0 <= rct.top and rct.bottom <= HEIGHT
     return yoko, tate
 
+def gameover(screen: pg.Surface):
+    over = pg.Surface((WIDTH,HEIGHT))
+    pg.draw.rect(over, (0, 0, 0), (0, 0, WIDTH, HEIGHT))
+    over.set_alpha(200)
+    over_font = pg.font.Font(None, 100)
+    txt = over_font.render("Game Over", True, (255, 255, 255))
+    txt_rct = txt.get_rect(center = (WIDTH // 2, HEIGHT // 2))
+    over.blit(txt, txt_rct)
+
+    over_img = pg.image.load("fig/8.png")
+
+    left_rct = over_img.get_rect(center=(WIDTH // 2 - 350, HEIGHT // 2))
+    over.blit(over_img, left_rct)
+
+    
+    right_rct = over_img.get_rect(center=(WIDTH // 2 + 350, HEIGHT // 2))
+    over.blit(over_img, right_rct)
+    screen.blit(over, (0, 0))
+    pg.display.update()
+    time.sleep(5)
+    return None
+    
 def main():
     pg.display.set_caption("逃げろ！こうかとん")
     screen = pg.display.set_mode((WIDTH, HEIGHT))
 
     bg_img = pg.image.load("fig/pg_bg.jpg")    
     kk_img = pg.transform.rotozoom(pg.image.load("fig/3.png"), 0, 0.9)
+    
+    kk_rct = kk_img.get_rect()
+    
 
     kk_rct = kk_img.get_rect()
-    kk_rct.centerx = 300
-    kk_rct.centery = 200
+    kk_rct.center = WIDTH // 2, HEIGHT // 2 + 80
+
 
     bb_img = pg.Surface((20, 20))
     bb_img.set_colorkey((0, 0, 0))
     pg.draw.circle(bb_img, (255, 0, 0), (10, 10), 10)
+    
 
     bb_rct = bb_img.get_rect()
     bb_rct.centerx = random.randint(10, WIDTH - 10)
@@ -67,11 +94,13 @@ def main():
 
         if not tate:
             vy *= -1
-            
+
         if kk_rct.colliderect(bb_rct):
+            gameover(screen)
             return
         
         screen.blit(bg_img,[0,0])
+        
         screen.blit(kk_img, kk_rct)
         screen.blit(bb_img, bb_rct)
         pg.display.update()
