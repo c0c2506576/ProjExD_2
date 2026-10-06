@@ -13,6 +13,10 @@ DELTA = {
 }
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
+def check_bound(rct):
+    yoko = 0 <= rct.left and rct.right <= WIDTH
+    tate = 0 <= rct.top and rct.bottom <= HEIGHT
+    return yoko, tate
 
 def main():
     pg.display.set_caption("逃げろ！こうかとん")
@@ -51,7 +55,18 @@ def main():
                 sum_mv[1] += mv[1]
 
         kk_rct.move_ip(sum_mv)
+
+        if not all(check_bound(kk_rct)):
+            kk_rct.move_ip(-sum_mv[0], -sum_mv[1])
+
         bb_rct.move_ip(vx,vy)
+        yoko, tate = check_bound(bb_rct)
+
+        if not yoko:
+            vx *= -1
+
+        if not tate:
+            vy *= -1
 
         screen.blit(bg_img,[0,0])
         screen.blit(kk_img, kk_rct)
